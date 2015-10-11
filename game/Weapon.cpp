@@ -2505,7 +2505,37 @@ rvWeapon::Attack
 void rvWeapon::Attack( bool altAttack, int num_attacks, float spread, float fuseOffset, float power ) {
 	idVec3 muzzleOrigin;
 	idMat3 muzzleAxis;
+	float		yaw;
+	idVec3     newOrg;
+	idPlayer	*player;
+	idDict		dict;
+
+
 	
+	gameLocal.Printf("vagina");
+	player = gameLocal.GetLocalPlayer();
+	//origin = player->GetPhysics()->GetOrigin();
+
+	player = gameLocal.GetLocalPlayer();
+	if ( !player || !gameLocal.CheatsOk( false ) ) {
+		return;
+	}
+
+	
+	dict.Set( "classname", "monster_grunt" );
+	dict.Set( "angle", va( "%f", yaw + 180 ) );
+
+
+	newOrg.Set(9703, -6805, 1.03);
+	dict.Set( "origin", newOrg.ToString() );
+
+	idEntity *newEnt = NULL;
+	gameLocal.SpawnEntityDef( dict, &newEnt );
+	
+
+
+
+
 	if ( !viewModel ) {
 		common->Warning( "NULL viewmodel %s\n", __FUNCTION__ );
 		return;

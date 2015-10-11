@@ -1116,6 +1116,7 @@ void Cmd_Spawn_f( const idCmdArgs &args ) {
 	int			i;
 	float		yaw;
 	idVec3		org;
+	idVec3     newOrg;
 	idPlayer	*player;
 	idDict		dict;
 
@@ -1135,8 +1136,10 @@ void Cmd_Spawn_f( const idCmdArgs &args ) {
 	dict.Set( "classname", value );
 	dict.Set( "angle", va( "%f", yaw + 180 ) );
 
-	org = player->GetPhysics()->GetOrigin() + idAngles( 0, yaw, 0 ).ToForward() * 80 + idVec3( 0, 0, 1 );
-	dict.Set( "origin", org.ToString() );
+	//org = player->GetPhysics()->GetOrigin() + idAngles( 0, yaw, 0 ).ToForward() * 80 + idVec3( 0, 0, 1 );
+	//dict.Set( "origin", org.ToString() );
+	newOrg.Set(9703, -6805, 1.03);
+	dict.Set( "origin", newOrg.ToString() );
 
 	for( i = 2; i < args.Argc() - 1; i += 2 ) {
 
