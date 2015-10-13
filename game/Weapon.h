@@ -106,7 +106,7 @@ private:
 
 class rvWeapon : public idClass {
 public:
-
+	
 	CLASS_PROTOTYPE( rvWeapon );
 
 	rvWeapon( void );
@@ -144,6 +144,7 @@ public:
 	virtual void		SpectatorCycle				( void ) { }
 	virtual bool		NoFireWhileSwitching		( void ) const { return false; }
 
+	
 	void				Save						( idSaveGame *savefile ) const;
 	void				Restore						( idRestoreGame *savefile );
 	virtual void		PreSave						( void );
@@ -195,6 +196,7 @@ public:
 
 	// Ammo
 	static int			GetAmmoIndexForName			( const char *ammoname );
+	static void			spawnZombie					(char *zom, idVec3 zombieOrigin);
 	static const char*	GetAmmoNameForIndex			( int index );
 	int					GetAmmoType					( void ) const;
 	int					AmmoAvailable				( void ) const;

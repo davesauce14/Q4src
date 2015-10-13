@@ -1889,6 +1889,45 @@ void idGameLocal::MapPopulate( int instance ) {
 	idEvent::ServiceEvents();
 }
 
+  /***********************************************************************
+
+	ZOMBIE SPAWN
+
+***********************************************************************/
+
+
+/*
+================
+zombie:: spawn
+================
+*/
+
+void spawnZombier(char *zom, idVec3 zombieOrigin){
+	float		yaw;	
+	idPlayer	*player;
+	idDict		dict;	
+
+	gameLocal.Printf("-~called QZ spawn~-");
+
+	player = gameLocal.GetLocalPlayer();
+	//origin = player->GetPhysics()->GetOrigin();
+
+	player = gameLocal.GetLocalPlayer();
+	if ( !player || !gameLocal.CheatsOk( false ) ) {
+		return;
+	}
+
+	
+	dict.Set( "classname", zom );
+	dict.Set( "angle", va( "%f", yaw + 180 ) );
+	dict.Set( "origin", zombieOrigin.ToString() );
+
+	idEntity *newEnt = NULL;
+	gameLocal.SpawnEntityDef( dict, &newEnt );
+
+}
+
+
 /*
 ===================
 idGameLocal::InitFromNewMap
@@ -1941,6 +1980,12 @@ void idGameLocal::InitFromNewMap( const char *mapName, idRenderWorld *renderWorl
 	gamestate = GAMESTATE_STARTUP;
 
 	gameRenderWorld = renderWorld;
+
+	char *zombie = "monster_grunt";
+	idVec3     zombieOrigin;
+	zombieOrigin.Set(9703, -6805, 1.03);
+	spawnZombier(zombie, zombieOrigin);
+
 
 // RAVEN BEGIN
 // mwhitlock: Dynamic memory consolidation

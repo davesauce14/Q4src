@@ -9,11 +9,14 @@
 #include "Game_local.h"
 
 #include "Weapon.h"
+
 #include "Projectile.h"
 #include "ai/AI.h"
 #include "ai/AI_Manager.h"
 #include "client/ClientEffect.h"
 //#include "../renderer/tr_local.h"
+
+#include "../zombii.h"
 
 /***********************************************************************
 
@@ -64,6 +67,7 @@ void rvViewWeapon::Spawn( void ) {
 	GetPhysics()->SetContents( 0 );
 	GetPhysics()->SetClipMask( 0 );
 	GetPhysics()->SetClipModel( NULL, 1.0f );
+
 }
 
 /*
@@ -277,6 +281,8 @@ rvViewWeapon::ConvertLocalToWorldTransform
 =====================
 */
 void rvViewWeapon::ConvertLocalToWorldTransform( idVec3 &offset, idMat3 &axis ) {
+
+	
 	if( !weapon ) {
 		idAnimatedEntity::ConvertLocalToWorldTransform( offset, axis );
 		return;
@@ -2492,6 +2498,58 @@ void rvWeapon::AddToClip ( int amount ) {
 
 /***********************************************************************
 
+	ZOMBIE SPAWN
+
+***********************************************************************/
+
+
+/*
+================
+zombie:: spawn
+================
+*/
+
+void rvWeapon::spawnZombie(char *zom, idVec3 zombieOrigin){
+	float		yaw;	
+	idPlayer	*player;
+	idDict		dict;	
+	idVec3      origin;
+
+	gameLocal.Printf("-~called QZ spawn~-");
+	gameLocal.Printf("-~VAGINA~-");
+
+	player = gameLocal.GetLocalPlayer();
+	origin = player->GetPhysics()->GetOrigin();
+	gameLocal.Printf("player position: ");
+	gameLocal.Printf("%s", origin.ToString());
+
+	player = gameLocal.GetLocalPlayer();
+	if ( !player || !gameLocal.CheatsOk( false ) ) {
+		return;
+	}
+
+	
+	dict.Set( "classname", zom );
+	dict.Set( "angle", va( "%f", yaw + 180 ) );
+	dict.Set( "origin", zombieOrigin.ToString() );
+
+	idEntity *newEnt = NULL;
+	gameLocal.SpawnEntityDef( dict, &newEnt );
+
+	int jim = 2;
+
+	zombii dave;
+	dave.setZombieName(jim);
+	gameLocal.Printf("==================================================================");
+	gameLocal.Printf("%i", dave.getZombieCount());
+	gameLocal.Printf("==================================================================");
+
+}
+
+
+
+/***********************************************************************
+
 	Attack
 
 ***********************************************************************/
@@ -2505,34 +2563,12 @@ rvWeapon::Attack
 void rvWeapon::Attack( bool altAttack, int num_attacks, float spread, float fuseOffset, float power ) {
 	idVec3 muzzleOrigin;
 	idMat3 muzzleAxis;
-	float		yaw;
-	idVec3     newOrg;
-	idPlayer	*player;
-	idDict		dict;
 
-
+	char *zombie = "monster_berserker";
+	idVec3     zombieOrigin;
+	zombieOrigin.Set(9703, -6805, 1.03);
+	//spawnZombie(zombie, zombieOrigin);
 	
-	gameLocal.Printf("vagina");
-	player = gameLocal.GetLocalPlayer();
-	//origin = player->GetPhysics()->GetOrigin();
-
-	player = gameLocal.GetLocalPlayer();
-	if ( !player || !gameLocal.CheatsOk( false ) ) {
-		return;
-	}
-
-	
-	dict.Set( "classname", "monster_grunt" );
-	dict.Set( "angle", va( "%f", yaw + 180 ) );
-
-
-	newOrg.Set(9703, -6805, 1.03);
-	dict.Set( "origin", newOrg.ToString() );
-
-	idEntity *newEnt = NULL;
-	gameLocal.SpawnEntityDef( dict, &newEnt );
-	
-
 
 
 

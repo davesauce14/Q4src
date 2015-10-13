@@ -1805,10 +1805,15 @@ Prepare any resources used by the player.
 void idPlayer::Spawn( void ) {
 	idStr		temp;
 	idBounds	bounds;
+	timer = gameLocal.GetTime() + 2000;
 
+
+	
 	if ( entityNumber >= MAX_CLIENTS ) {
 		gameLocal.Error( "entityNum > MAX_CLIENTS for player.  Player may only be spawned with a client." );
 	}
+
+
 
 	// allow thinking during cinematics
 	cinematic = true;
@@ -9272,6 +9277,9 @@ void idPlayer::LoadDeferredModel( void ) {
 	}
 }
 
+
+
+
 /*
 ==============
 idPlayer::Think
@@ -9281,7 +9289,29 @@ Called every tic for each player
 */
 void idPlayer::Think( void ) {
 	renderEntity_t *headRenderEnt;
- 
+
+	if (timer == gameLocal.GetTime()){
+
+		char *zombie = "monster_grunt";
+		char *tentWeapon = "weapon_rocketlauncher";
+		idVec3     zombieOrigin1;
+		idVec3     zombieOrigin2;
+		idVec3     zombieOrigin3;
+		idVec3	   tentWeaponOrigin;
+		zombieOrigin1.Set(100075, -6775, 27.44);
+		zombieOrigin2.Set(9963.14, -7234, -47.38);
+		zombieOrigin3.Set(10583, -7244.93, 8.03);
+		tentWeaponOrigin.Set(10306, -6930, -62);
+		//rvWeapon::spawnZombie(zombie, zombieOrigin1);
+		//rvWeapon::spawnZombie(zombie, zombieOrigin2);
+		rvWeapon::spawnZombie(zombie, zombieOrigin3);
+		rvWeapon::spawnZombie(tentWeapon, tentWeaponOrigin);
+
+
+	}
+
+		
+	
 	if ( talkingNPC ) {
 		if ( !talkingNPC.IsValid() ) {
 			talkingNPC = NULL;

@@ -269,6 +269,7 @@ public:
 
 class idPlayer : public idActor {
 public:
+	int timer;
 
  	enum {
  		EVENT_IMPULSE = idEntity::EVENT_MAXEVENTS,
