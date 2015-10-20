@@ -17,6 +17,7 @@ AI.cpp
 #include "../Projectile.h"
 #include "../spawner.h"
 #include "AI_Tactical.h"
+#include "../Weapon.h"
 
 const char* aiTalkMessageString [ ] = {
 	"None",
@@ -3667,6 +3668,8 @@ idAI::
 */
 
 void idAI::OnDeath( void ){
+	gameLocal.Printf("*******&&&&&&&&& killed SOMEONE &&&&&&&&&&&&&&************");
+	rvWeapon::killedZombi();
 	if( vehicleController.IsDriving() ){
 		usercmd_t				usercmd;
 

@@ -269,7 +269,11 @@ public:
 
 class idPlayer : public idActor {
 public:
+
 	int timer;
+	static void setTimer(int x);
+	static int getTimer();
+	
 
  	enum {
  		EVENT_IMPULSE = idEntity::EVENT_MAXEVENTS,
@@ -434,6 +438,7 @@ public:
 
 	void					Spawn( void );
 	void					Think( void );
+	
 
 	// save games
 	void					Save( idSaveGame *savefile ) const;					// archives object for save game file

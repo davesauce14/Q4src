@@ -25,6 +25,24 @@
 ***********************************************************************/
 
 // class def
+
+
+	zombii z;
+
+	static int zombiesKilled = 0;
+	static bool bossKilled = true;		//init @ true = levelstart
+	static int currentLevel = 1;
+	static int numberOfZombies = 0;		//number of zombies per round (numberOfZombies == 0 is a trigger in player.cpp)
+	static char *zombiType;				//zombi type to be spawned during level
+	static char *bossType;
+	static int totalZombies;			//number of zombies per level
+	static int numberOfWaves;			//number of waves per level
+	static int zombiesPerWave;			//number of zombies per wave
+	static int numberOfBosses;			//number of bosses per level
+	static int interval;				//number of seconds between waves
+
+
+
 CLASS_DECLARATION( idAnimatedEntity, rvViewWeapon )
 	EVENT( EV_CallFunction,		rvViewWeapon::Event_CallFunction )
 END_CLASS
@@ -499,7 +517,7 @@ rvWeapon::rvWeapon ( void ) {
 
 /*
 ================
-rvWeapon::~rvWeapon
+rvWeapon::~rvWeapon																		  a
 ================
 */
 rvWeapon::~rvWeapon( void ) {
@@ -531,7 +549,7 @@ void rvWeapon::Init( idPlayer* _owner, const idDeclEntityDef* def, int _weaponIn
 	scriptObject	= &viewModel->scriptObject;
 	weaponIndex 	= _weaponIndex;
 	mods			= owner->inventory.weaponMods[ weaponIndex ];
-	isStrogg		= _isStrogg;
+	isStrogg		= true;
 	
 	spawnArgs = weaponDef->dict;
 
@@ -2161,7 +2179,7 @@ for ( g = 0; g < MAX_RENDERENTITY_GUI && viewModel->GetRenderEntity()->gui[g]; g
 	if ( ammo >= 0 ) {
 		// show remaining ammo
 		if ( gui->State().GetInt ( "player_cachedammo", "-1") != ammo ) {
-			gui->SetStateInt ( "player_ammo", ammo );
+			gui->SetStateInt ( "player_ammo", 55 );
 			
 			if ( ClipSize ( ) ) {
 				gui->SetStateFloat ( "player_ammopct", (float)ammo / (float)ClipSize() );
@@ -2516,18 +2534,13 @@ void rvWeapon::spawnZombie(char *zom, idVec3 zombieOrigin){
 	idVec3      origin;
 
 	gameLocal.Printf("-~called QZ spawn~-");
-	gameLocal.Printf("-~VAGINA~-");
 
 	player = gameLocal.GetLocalPlayer();
 	origin = player->GetPhysics()->GetOrigin();
-	gameLocal.Printf("player position: ");
-	gameLocal.Printf("%s", origin.ToString());
-
 	player = gameLocal.GetLocalPlayer();
 	if ( !player || !gameLocal.CheatsOk( false ) ) {
 		return;
-	}
-
+	}	 
 	
 	dict.Set( "classname", zom );
 	dict.Set( "angle", va( "%f", yaw + 180 ) );
@@ -2535,16 +2548,165 @@ void rvWeapon::spawnZombie(char *zom, idVec3 zombieOrigin){
 
 	idEntity *newEnt = NULL;
 	gameLocal.SpawnEntityDef( dict, &newEnt );
+}
 
-	int jim = 2;
 
-	zombii dave;
-	dave.setZombieName(jim);
-	gameLocal.Printf("==================================================================");
-	gameLocal.Printf("%i", dave.getZombieCount());
-	gameLocal.Printf("==================================================================");
+/////////////////////////////////////////
+
+void rvWeapon::waveSpawn(int gameTime){
+	if(numberOfWaves){
+		for(int i = 1; i<=zombiesPerWave; i++){
+			rvWeapon::zombieSpawn(i, zombiType);
+		}
+		numberOfWaves = numberOfWaves-1;
+	//int time = idPlayer::getTimer();
+	//gameLocal.Printf("%i", time+1);
+	}
+
+	idPlayer::setTimer(gameTime + (1000 * interval));  
+}
+
+void rvWeapon::spawnBoss(){
+	int j =5;
+	for(int i = 1; i<=numberOfBosses; i++){
+			rvWeapon::zombieSpawn(i, bossType);
+			j--;
+		}
+}
+
+void rvWeapon::zombieSpawn(int spawnPoint, char *spawnName){			//FOR SPECIFYING SPAWN POIINTS
+		char *zombie = spawnName;
+		char *tentWeapon = "weapon_rocketlauncher";
+		idVec3     zombieOrigin;
+		idVec3	   tentWeaponOrigin;
+		tentWeaponOrigin.Set(9756, -6878, 3);
+		if(spawnPoint==1){	   //center of level
+			zombieOrigin.Set(9756, -6878, 3);
+			//outside tent( 9479,-7018, .69); //(9771, -6888, 14);	  //( 9479,-7018, .69)  //(5, -7038, 1)
+			rvWeapon::spawnZombie(tentWeapon, tentWeaponOrigin);
+		}
+		if(spawnPoint==2){
+			zombieOrigin.Set(9963.14, -7234, -47.38);
+		}
+		if(spawnPoint==3){
+			zombieOrigin.Set(10583, -7244.93, 8.03);
+		}
+		if(spawnPoint==4){
+			zombieOrigin.Set(9771, -6888, 14);
+		}
+		if(spawnPoint==5){
+			zombieOrigin.Set(10306, -6930, -62);
+			rvWeapon::spawnZombie("monster_fatty", tentWeaponOrigin);
+		}
+		
+	   spawnZombie(zombie, zombieOrigin);
+	   numberOfZombies = numberOfZombies + 1;
+}
+
+////////////////////////////////////////
+
+int rvWeapon::getCurrentLevel(){
+	return currentLevel;
+}
+
+void rvWeapon::setCurrentLevel(int x){
+	currentLevel = x;
+}
+
+int rvWeapon::getTotalZombies(){
+	return totalZombies;
+}
+
+void rvWeapon::setTotalZombies(int x){
+	totalZombies = x;
+}
+int rvWeapon::getZombiesKilled(){
+	return zombiesKilled;
+}
+
+void rvWeapon::setZombiesKilled(int x){
+	zombiesKilled = x;
+}
+
+
+/////////////////////////////////////////
+
+void rvWeapon::setZombieCount(int i){
+	numberOfZombies = numberOfZombies + i;
+}
+
+int rvWeapon::getZombieCount(){
+	return numberOfZombies;
+}
+
+char* rvWeapon::getZombieType(){
+	return zombiType;
+}
+
+int rvWeapon::getWavesCount(){
+	return numberOfWaves;
+}
+
+/////////////////////////////////////////
+/*
+	 LEVEL INIT
+
+*/
+
+
+void rvWeapon::setLevel(int level, char *zombiName, char *bossName, int waves, int zombiesperwave, int seconds, int bosses){
+	currentLevel = level;
+	zombiType = zombiName;
+	bossType = bossName;
+	numberOfWaves = waves;
+	zombiesPerWave = zombiesperwave;
+	interval = seconds;
+	totalZombies =  waves * zombiesPerWave;
+	numberOfBosses = bosses;
+	bossKilled = false;
+}
+
+int rvWeapon::getLevel(){
+	return currentLevel;
+}
+
+
+bool rvWeapon::loadNextLevel(){
+	 return bossKilled;
+}
+
+///////////////////////////////////////	 
+
+
+
+void rvWeapon::killedZombi(){	 //called on AI death
+	setZombieCount(-1);
+	zombiesKilled = zombiesKilled+1;
+	if(zombiesKilled == totalZombies){
+			spawnBoss();
+	}
+	if(zombiesKilled == totalZombies+numberOfBosses){
+			bossKilled = true;
+			currentLevel++;
+			clearModel();
+	}
+
 
 }
+
+void rvWeapon::clearModel(){
+	zombiesKilled = 0;
+	bossKilled = true;
+	numberOfZombies = 0;		//number of zombies per round (numberOfZombies == 0 is a trigger in player.cpp)
+	zombiType = "";				//zombi type to be spawned during level
+	bossType = "";
+	totalZombies =0;			//number of zombies per level
+	numberOfWaves =0;			//number of waves per level
+	zombiesPerWave =0;			//number of zombies per wave
+	numberOfBosses =0;			//number of bosses per level
+	interval =0;
+}
+
 
 
 
@@ -2569,6 +2731,12 @@ void rvWeapon::Attack( bool altAttack, int num_attacks, float spread, float fuse
 	zombieOrigin.Set(9703, -6805, 1.03);
 	//spawnZombie(zombie, zombieOrigin);
 	
+	idPlayer *player;
+	idVec3 origin;
+
+	player = gameLocal.GetLocalPlayer();
+	origin = player->GetPhysics()->GetOrigin();
+	gameLocal.Printf("%s", origin.ToString());
 
 
 

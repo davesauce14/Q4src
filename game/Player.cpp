@@ -18,6 +18,8 @@
 #include "Healing_Station.h"
 #include "ai/AI_Medic.h"
 
+#include "../zombii.h"
+
 // RAVEN BEGIN
 // nrausch: support for turning the weapon change ui on and off
 #ifdef _XENON
@@ -30,6 +32,12 @@
 
 idCVar net_predictionErrorDecay( "net_predictionErrorDecay", "112", CVAR_FLOAT | CVAR_GAME | CVAR_NOCHEAT, "time in milliseconds it takes to fade away prediction errors", 0.0f, 200.0f );
 idCVar net_showPredictionError( "net_showPredictionError", "-1", CVAR_INTEGER | CVAR_GAME | CVAR_NOCHEAT, "show prediction errors for the given client", -1, MAX_CLIENTS );
+
+
+
+//static int timer = gameLocal.GetTime() +10000;
+
+int timerr = 190000;
 
 
 /*
@@ -1805,7 +1813,8 @@ Prepare any resources used by the player.
 void idPlayer::Spawn( void ) {
 	idStr		temp;
 	idBounds	bounds;
-	timer = gameLocal.GetTime() + 2000;
+
+	timer = gameLocal.GetTime() + 195000;
 
 
 	
@@ -3357,8 +3366,10 @@ void idPlayer::UpdateHudAmmo( idUserInterface *_hud ) {
 	assert( weapon );
 	assert( _hud );
 
-	inclip		= weapon->AmmoInClip();
-	ammoamount	= weapon->AmmoAvailable();
+	inclip		= rvWeapon::getTotalZombies()-rvWeapon::getZombiesKilled() ;
+	ammoamount= (rvWeapon::getZombiesKilled())?
+		rvWeapon::getTotalZombies()-rvWeapon::getZombiesKilled() 
+		:rvWeapon::getTotalZombies();//weapon->AmmoAvailable();
 
 	if ( ammoamount < 0 ) {
 		// show infinite ammo
@@ -3367,7 +3378,7 @@ void idPlayer::UpdateHudAmmo( idUserInterface *_hud ) {
 		_hud->SetStateFloat ( "player_ammopct", 1.0f );
 	} else if ( weapon->ClipSize ( ) && !gameLocal.isMultiplayer ) {
 		_hud->SetStateInt ( "player_clip_size", weapon->ClipSize() );
-		_hud->SetStateFloat ( "player_ammopct", (float)inclip / (float)weapon->ClipSize ( ) );
+		_hud->SetStateFloat ( "player_ammopct", (float)inclip / (float)rvWeapon::getTotalZombies() );
 		if ( weapon->ClipSize ( )==1) {
 			_hud->SetStateInt ( "player_totalammo", ammoamount );
 		}
@@ -3376,7 +3387,7 @@ void idPlayer::UpdateHudAmmo( idUserInterface *_hud ) {
 		}
 		_hud->SetStateInt ( "player_ammo", inclip );
 	} else {
-		_hud->SetStateFloat ( "player_ammopct", (float)ammoamount / (float)weapon->maxAmmo );
+		_hud->SetStateFloat ( "player_ammopct", (float)ammoamount / (float)rvWeapon::getTotalZombies() );
 		_hud->SetStateInt ( "player_totalammo", ammoamount );
 		_hud->SetStateInt ( "player_ammo", -1 );
 	} 
@@ -9276,8 +9287,16 @@ void idPlayer::LoadDeferredModel( void ) {
 		}
 	}
 }
+ 
+	void idPlayer::setTimer(int x){
+		timerr = x;
+	}
 
-
+	int idPlayer::getTimer(){
+		return timerr;
+	}
+	
+		
 
 
 /*
@@ -9290,27 +9309,102 @@ Called every tic for each player
 void idPlayer::Think( void ) {
 	renderEntity_t *headRenderEnt;
 
-	if (timer == gameLocal.GetTime()){
+	char *weaponI;
+	char *weaponII;
+	idVec3	    weaponIOrigin;
+	idVec3		weaponIIOrigin;
+	weaponIOrigin.Set(10306, -6930, -62);
+	weaponIIOrigin.Set(9771, -6377, .25);
 
-		char *zombie = "monster_grunt";
-		char *tentWeapon = "weapon_rocketlauncher";
-		idVec3     zombieOrigin1;
-		idVec3     zombieOrigin2;
-		idVec3     zombieOrigin3;
-		idVec3	   tentWeaponOrigin;
-		zombieOrigin1.Set(100075, -6775, 27.44);
-		zombieOrigin2.Set(9963.14, -7234, -47.38);
-		zombieOrigin3.Set(10583, -7244.93, 8.03);
-		tentWeaponOrigin.Set(10306, -6930, -62);
-		//rvWeapon::spawnZombie(zombie, zombieOrigin1);
-		//rvWeapon::spawnZombie(zombie, zombieOrigin2);
-		rvWeapon::spawnZombie(zombie, zombieOrigin3);
-		rvWeapon::spawnZombie(tentWeapon, tentWeaponOrigin);
+	
+	if(rvWeapon::loadNextLevel()){
+		
+		
+		int level =	rvWeapon::getLevel();	
+							
+		switch(level){
+				case 1:
+					rvWeapon::setLevel(1, "monster_failed_transfer", "no_boss", 1, 1, 8, 0);
+					weaponI = "weapon_shotgun";
+					weaponII = "weapon_napalmgun";
+					rvWeapon::spawnZombie(weaponI, weaponIOrigin);
+					rvWeapon::spawnZombie(weaponII, weaponIIOrigin);
+					break;
+
+				case 2:
+					rvWeapon::setLevel (2,"monster_failed_transfer", "monster_berserker", 4, 3, 10, 2);
+					weaponI = "weapon_rocketlauncher";
+					weaponII = "weapon_lightninggun";
+					rvWeapon::spawnZombie(weaponI, weaponIOrigin);
+					rvWeapon::spawnZombie(weaponII, weaponIIOrigin);
+					break;
+
+				case 3:
+					rvWeapon::setLevel (3,"monster_failed_transfer", "monster_bossbuddy", 5, 4, 18, 1);
+					weaponI = "weapon_rocketlauncher";
+					weaponII = "weapon_lightninggun";
+					rvWeapon::spawnZombie(weaponI, weaponIOrigin);
+					rvWeapon::spawnZombie(weaponII, weaponIIOrigin);
+					break;
+
+				case 4:
+					rvWeapon::setLevel (4, "monster_sentry", "monster_harvester_combat", 5, 4, 10, 1);
+					weaponI = "weapon_rocketlaucher";
+					weaponII = "weapon_nailgun";
+					rvWeapon::spawnZombie(weaponI, weaponIOrigin);
+					rvWeapon::spawnZombie(weaponII, weaponIIOrigin);
+					idPlayer::Event_SetHealth(100);
+					break;
+				case 5:
+					rvWeapon::setLevel (5, "monster_grunt", "monster_network_guardian", 5, 2, 10, 1);
+					weaponI = "weapon_dmg";
+					weaponII = "weapon_nailgun";
+					rvWeapon::spawnZombie(weaponI, weaponIOrigin);
+					rvWeapon::spawnZombie(weaponII, weaponIIOrigin);
+					idPlayer::Event_SetHealth(100);
+					break;
+				
+		}
 
 
+
+	}	  
+		
+
+
+										//start Game
+		int zombieCount = rvWeapon::getZombieCount();
+		//gameLocal.Printf("%i", zombieCount);
+		if(zombieCount == 0 && timer < gameLocal.GetTime()){
+		//gameLocal.Printf("zombII count:");
+		//gameLocal.Printf("%i", zombieCount);
+		//rvWeapon::waveSpawn();
+		
+		}					
+		int gameTime = gameLocal.GetTime();
+		gameTime -= gameTime %1000;
+		//gameLocal.Printf("get timeeeeeeeeee:");
+		//gameLocal.Printf("%i\n", gameTime);
+	
+
+	if (gameTime == timerr ){				//zombii Loop
+		gameLocal.Printf("get timeeeeeeeeee:");
+		gameLocal.Printf("%i\n", gameLocal.GetTime());
+
+		gameLocal.Printf("level:");
+		gameLocal.Printf("%i\n", rvWeapon::getLevel());
+
+		gameLocal.Printf("wave:");
+		gameLocal.Printf("%i\n", rvWeapon::getWavesCount());
+								
+		rvWeapon::waveSpawn(gameTime);
+		//timerr = gameTime + 15000;
+
+		 
+			
 	}
 
-		
+
 	
 	if ( talkingNPC ) {
 		if ( !talkingNPC.IsValid() ) {
@@ -9759,6 +9853,7 @@ void idPlayer::Killed( idEntity *inflictor, idEntity *attacker, int damage, cons
 	float delay;
 
 	assert( !gameLocal.isClient );
+	gameLocal.Printf("*******&&&&&&&&& died &&&&&&&&&&&&&&************");
 
 	// stop taking knockback once dead
 	fl.noknockback = true;

@@ -36,6 +36,8 @@ class rvWeapon;
 class rvViewWeapon : public idAnimatedEntity {
 public:
 
+
+
 	CLASS_PROTOTYPE( rvViewWeapon );
 
 							rvViewWeapon( void );
@@ -106,6 +108,50 @@ private:
 
 class rvWeapon : public idClass {
 public:
+
+
+
+
+
+	static int zombiesSpawned;	
+	//static int currentLevel;	   //if boss killed current level changes
+
+	
+
+
+
+						//LEVEL CONSTRUCTOR
+	static void			setLevel					(int level, char *zombiName, char *bossName, int waves, int zombiesperwave, int seconds, int bosses);
+	static int			getLevel();
+	static bool			loadNextLevel();
+
+	static void			killedZombi();	
+	static void			clearModel();
+
+						//SPAWN MODULES
+	static void			waveSpawn					(int gameTime);
+	static void			zombieSpawn					(int spawnPoint, char *spawnName);
+	static void			spawnZombie					(char *zom, idVec3 zombieOrigin);
+	static void			spawnBoss();  
+
+						//GHETTAS N SETTAHS
+	static void			setZombieCount(int i);
+	static int			getZombieCount();
+	static char*		getZombieType();
+	static int			getWavesCount();
+	static int			getCurrentLevel();
+	static void			setCurrentLevel(int x);
+	static int			getTotalZombies();
+	static void			setTotalZombies(int x);
+	static int			getZombiesKilled();
+	static void			setZombiesKilled(int x);
+
+
+
+
+
+
+
 	
 	CLASS_PROTOTYPE( rvWeapon );
 
@@ -196,7 +242,6 @@ public:
 
 	// Ammo
 	static int			GetAmmoIndexForName			( const char *ammoname );
-	static void			spawnZombie					(char *zom, idVec3 zombieOrigin);
 	static const char*	GetAmmoNameForIndex			( int index );
 	int					GetAmmoType					( void ) const;
 	int					AmmoAvailable				( void ) const;

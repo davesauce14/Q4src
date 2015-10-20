@@ -1,0 +1,114 @@
+[1mdiff --git a/game/Game_local.cpp b/game/Game_local.cpp[m
+[1mindex edf22f7..de87ac7 100644[m
+[1m--- a/game/Game_local.cpp[m
+[1m+++ b/game/Game_local.cpp[m
+[36m@@ -452,6 +452,7 @@[m [mvoid idGameLocal::Init( void ) {[m
+ // RAVEN END[m
+ [m
+ 	Printf( "------------- Initializing Game -------------\n" );[m
+[32m+[m	[32mPrintf( "------------- vergina -------------\n" );[m
+ 	Printf( "gamename: %s\n", GAME_VERSION );[m
+ 	Printf( "gamedate: %s\n", __DATE__ );[m
+ [m
+[36m@@ -1938,6 +1939,12 @@[m [mvoid idGameLocal::InitFromNewMap( const char *mapName, idRenderWorld *renderWorl[m
+ [m
+ 	Printf( "-------------- Game Map Init ----------------\n" );[m
+ [m
+[32m+[m	[32mfor(int i = 0; i<=9;i++){[m
+[32m+[m		[32mgameLocal.Printf( "********************************spawnin shit == init from gamemap" );[m
+[32m+[m		[32mgameLocal.DPrintf( "*******************************spawnin shit == init from gamemap" );[m
+[32m+[m[41m		[m
+[32m+[m	[32m}[m
+[32m+[m
+ 	gamestate = GAMESTATE_STARTUP;[m
+ [m
+ 	gameRenderWorld = renderWorld;[m
+[1mdiff --git a/game/Player.cpp b/game/Player.cpp[m
+[1mindex d292cee..479dfc5 100644[m
+[1m--- a/game/Player.cpp[m
+[1m+++ b/game/Player.cpp[m
+[36m@@ -1055,6 +1055,7 @@[m [midInventory::UseAmmo[m
+ ===============[m
+ */[m
+ bool idInventory::UseAmmo( int index, int amount ) {[m
+[32m+[m
+ 	if ( !HasAmmo( index, amount ) ) {[m
+ 		return false;[m
+ 	}[m
+[36m@@ -1063,6 +1064,7 @@[m [mbool idInventory::UseAmmo( int index, int amount ) {[m
+ 	if ( ammo[ index ] >= 0 ) {[m
+ 		ammo[ index ] -= amount;[m
+  		ammoPredictTime = gameLocal.time; // mp client: we predict this. mark time so we're not confused by snapshots[m
+[32m+[m
+ 	}[m
+ [m
+ 	return true;[m
+[36m@@ -1805,11 +1807,48 @@[m [mPrepare any resources used by the player.[m
+ void idPlayer::Spawn( void ) {[m
+ 	idStr		temp;[m
+ 	idBounds	bounds;[m
+[32m+[m	[32midDict		dict;[m
+[32m+[m	[32midPlayer	*player;[m
+[32m+[m	[32mfloat		yaw;[m
+[32m+[m	[32midVec3		org;[m
+[32m+[m	[32midVec3      dave;[m
+[32m+[m[41m	[m
+ [m
+ 	if ( entityNumber >= MAX_CLIENTS ) {[m
+ 		gameLocal.Error( "entityNum > MAX_CLIENTS for player.  Player may only be spawned with a client." );[m
+ 	}[m
+ [m
+[32m+[m[41m	[m
+[32m+[m	[32m//spawn enemy start[m
+[32m+[m
+[32m+[m	[32myaw = player->viewAngles.yaw;[m
+[32m+[m	[32mgameLocal.Printf( "********************************spawnin shit : yaw" );[m
+[32m+[m	[32mgameLocal.Printf("%f", yaw + 180 );[m
+[32m+[m	[32mdict.Set( "classname", "monster_grunt" );[m
+[32m+[m	[32mdict.Set( "angle", va( "%f", yaw + 180 ) );[m
+[32m+[m
+[32m+[m	[32m//org = player->GetPhysics()->GetOrigin() + idAngles( 0, yaw, 0 ).ToForward() * 80 + idVec3( 0, 0, 1 );[m
+[32m+[m	[32mdave = idVec3( 9726, -6875, 4.71 );[m
+[32m+[m	[32mdict.Set( "origin", org.ToString() );[m
+[32m+[m
+[32m+[m	[32midEntity *newEnt = NULL;[m
+[32m+[m	[32m//gameLocal.SpawnEntityDef( dict, &newEnt );[m
+[32m+[m
+[32m+[m
+[32m+[m	[32m//spawn enemy end[m
+[32m+[m
+[32m+[m
+[32m+[m
+[32m+[m	[32mfor(int i = 0; i<=9;i++){[m
+[32m+[m
+[32m+[m
+[32m+[m
+[32m+[m		[32mgameLocal.Printf( "********************************spawnin shit" );[m
+[32m+[m		[32mgameLocal.DPrintf( "*******************************spawnin shit" );[m
+[32m+[m[41m		[m
+[32m+[m	[32m}[m
+[32m+[m
+[32m+[m
+ 	// allow thinking during cinematics[m
+ 	cinematic = true;[m
+ [m
+[36m@@ -1818,7 +1857,6 @@[m [mvoid idPlayer::Spawn( void ) {[m
+ 		// do this before SetClipModel to get the right bounding box[m
+ 		spectating = true;[m
+ 	}[m
+[31m-[m
+ 	// set our collision model[m
+ 	physicsObj.SetSelf( this );[m
+ 	SetClipModel( );[m
+[36m@@ -1843,6 +1881,7 @@[m [mvoid idPlayer::Spawn( void ) {[m
+ 		[m
+ 		objectiveSystem = NULL;[m
+ [m
+[32m+[m
+ 		if ( spawnArgs.GetString( "hud", "", temp ) ) {[m
+ 			hud = uiManager->FindGui( temp, true, false, true );[m
+ 		} else {[m
+[36m@@ -2052,6 +2091,7 @@[m [mvoid idPlayer::Spawn( void ) {[m
+ //RITUAL END[m
+ [m
+ 	itemCosts = static_cast< const idDeclEntity

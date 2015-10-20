@@ -74,12 +74,15 @@ rvMonsterFailedTransfer::OnDeath
 ================
 */
 void rvMonsterFailedTransfer::OnDeath ( void ) {
+	if(allowSplit)
+		rvWeapon::setZombiesKilled(rvWeapon::getZombiesKilled()-1);
 	idAI::OnDeath ( );
 	
 	if ( allowSplit ) {
+		//rvWeapon::setZombiesKilled(rvWeapon::getZombiesKilled()-1);
 		idEntity* torso;
 		idDict	  args;
-
+	  
 		LoadAF ( "ragdoll_legs", true );
 
 		PlayEffect ( "fx_bloodyburst", animator.GetJointHandle ( "chest" ) );	
